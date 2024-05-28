@@ -1,30 +1,105 @@
-from anytree import Node, RenderTree
-from functions import *
-
-
-class Perfil:
-    def __init__(self, nome, amigos=None):
+class Usuario:
+    def __init__(self, id_usuario, nome):
+        self.id_usuario = id_usuario
         self.nome = nome
-        self.amigos = amigos if amigos else []
+        self.relacionamentos = []
+
+    def adicionar_relacionamento(self, usuario):
+        self.relacionamentos.append(usuario)
+
+    def remover_relacionamento(self, id_usuario):
+        self.relacionamentos = [
+            user for user in self.relacionamentos if user.id_usuario != id_usuario]
 
 
-perfil1 = Perfil("João", ["Maria", "Carlos", "Ana", "Lucas"])
-perfil2 = Perfil("Maria", ["João", "Ana", "Pedro", "Lucas"])
-perfil3 = Perfil("Ana", ["João", "Maria", "Pedro", "Lucas"])
-perfil4 = Perfil("Carlos", ["João", "Pedro", "Lucas"])
-perfil5 = Perfil("Pedro", ["Maria", "Ana", "Carlos", "Lucas"])
-perfil6 = Perfil("Lucas", ["João", "Maria", "Ana", "Carlos", "Pedro"])
-perfil7 = Perfil("Laura", ["Maria", "Ana", "Lucas"])
-perfil8 = Perfil("Mariana", ["João", "Pedro", "Lucas"])
-perfil9 = Perfil("Eduardo", ["Ana", "Carlos", "Lucas"])
-perfil10 = Perfil("Luisa", ["João", "Pedro", "Laura", "Mariana", "Lucas"])
-perfil11 = Perfil("Rafael", ["Maria", "Ana", "Lucas"])
+class RedeSocial:
+    def __init__(self):
+        self.usuarios = {}
 
-# Mudar essa linha para ver pessoas diferentes
-amigos_em_comum = encontrar_amigos_em_comum(perfil2, perfil3)
+    def adicionar_usuario(self, id_usuario, nome):
+        if id_usuario not in self.usuarios:
+            self.usuarios[id_usuario] = Usuario(id_usuario, nome)
+        else:
+            print(f"Usuário com ID {id_usuario} já existe.")
 
-# Essa também
-print(f"Amigos em comum entre {perfil2.nome} e { perfil3.nome}:", amigos_em_comum)
+    def adicionar_relacionamento(self, id_usuario1, id_usuario2):
+        if id_usuario1 in self.usuarios and id_usuario2 in self.usuarios:
+            self.usuarios[id_usuario1].adicionar_relacionamento(
+                self.usuarios[id_usuario2])
+            self.usuarios[id_usuario2].adicionar_relacionamento(
+                self.usuarios[id_usuario1])
+        else:
+            print("Um ou ambos os usuários não foram encontrados.")
 
-# Mudar essa também
-exibir_perfis_em_comum(perfil2, perfil3)
+    def remover_usuario(self, id_usuario):
+        if id_usuario in self.usuarios:
+            usuario = self.usuarios[id_usuario]
+            for rel in usuario.relacionamentos:
+                rel.remover_relacionamento(id_usuario)
+            del self.usuarios[id_usuario]
+        else:
+            print(f"Usuário {id_usuario} não encontrado.")
+
+    def buscar_usuario(self, id_usuario):
+        if id_usuario in self.usuarios:
+            usuario = self.usuarios[id_usuario]
+            return usuario
+        else:
+            return None
+
+    def exibir_relacionamentos(self):
+        for usuario in self.usuarios.values():
+            print(f"{usuario.nome} ({usuario.id_usuario})")
+            for rel in usuario.relacionamentos:
+                print(f"  -> {rel.nome} ({rel.id_usuario})")
+
+
+def main():
+    rede_social = RedeSocial()
+
+    while True:
+        print("\nMenu:")
+        print("1. Adicionar usuário")
+        print("2. Adicionar relacionamento")
+        print("3. Remover usuário")
+        print("4. Exibir relacionamentos")
+        print("5. Buscar usuário")
+        print("6. Sair")
+        escolha = input("Digite sua escolha: ")
+
+        if escolha == '1':
+            id_usuario = int(input("Digite o ID do novo usuário: "))
+            nome = input("Digite o nome do novo usuário: ")
+            rede_social.adicionar_usuario(id_usuario, nome)
+
+        elif escolha == '2':
+            id_usuario1 = int(input("Digite o ID do primeiro usuário: "))
+            id_usuario2 = int(input("Digite o ID do segundo usuário: "))
+            rede_social.adicionar_relacionamento(id_usuario1, id_usuario2)
+
+        elif escolha == '3':
+            id_usuario = int(input("Digite o ID do usuário a ser removido: "))
+            rede_social.remover_usuario(id_usuario)
+
+        elif escolha == '4':
+            rede_social.exibir_relacionamentos()
+
+        elif escolha == '5':
+            id_usuario = int(input("Digite o ID do usuário a ser buscado: "))
+            usuario = rede_social.buscar_usuario(id_usuario)
+            if usuario:
+                print(f"Usuário encontrado: { usuario.nome} ({usuario.id_usuario})")
+                print("Relacionamentos:")
+                for rel in usuario.relacionamentos:
+                    print(f"  -> {rel.nome} ({rel.id_usuario})")
+            else:
+                print("Usuário não encontrado.")
+
+        elif escolha == '6':
+            break
+
+        else:
+            print("Escolha inválida. Tente novamente.")
+
+
+main()
