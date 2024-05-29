@@ -16,7 +16,7 @@ class RedeSocial:
     def __init__(self):
         self.usuarios = {}
 
-    def adicionar_usuario(self, id_usuario, nome):
+    def adicionar_usuario(self, id_usuario, nome):    
         if id_usuario not in self.usuarios:
             self.usuarios[id_usuario] = Usuario(id_usuario, nome)
         else:
@@ -68,24 +68,36 @@ def main():
         escolha = input("Digite sua escolha: ")
 
         if escolha == '1':
-            id_usuario = int(input("Digite o ID do novo usuário: "))
+            id_usuario = 0
+            try:
+                id_usuario = int(input("Digite o ID do novo usuário: "))
+            except ValueError:
+                print('Digite apenas números!')
             nome = input("Digite o nome do novo usuário: ")
             rede_social.adicionar_usuario(id_usuario, nome)
-
         elif escolha == '2':
-            id_usuario1 = int(input("Digite o ID do primeiro usuário: "))
-            id_usuario2 = int(input("Digite o ID do segundo usuário: "))
+            try:
+                id_usuario1 = int(input("Digite o ID do primeiro usuário: "))
+                id_usuario2 = int(input("Digite o ID do segundo usuário: "))
+            except ValueError:
+                print('Digite apenas números!')
             rede_social.adicionar_relacionamento(id_usuario1, id_usuario2)
 
         elif escolha == '3':
-            id_usuario = int(input("Digite o ID do usuário a ser removido: "))
+            try:
+                id_usuario = int(input("Digite o ID do usuário a ser removido: "))
+            except ValueError:
+                print('Digite apenas números!')
             rede_social.remover_usuario(id_usuario)
 
         elif escolha == '4':
             rede_social.exibir_relacionamentos()
 
         elif escolha == '5':
-            id_usuario = int(input("Digite o ID do usuário a ser buscado: "))
+            try:
+                id_usuario = int(input("Digite o ID do usuário a ser buscado: "))
+            except ValueError:
+                print('Digite apenas números!')
             usuario = rede_social.buscar_usuario(id_usuario)
             if usuario:
                 print(f"Usuário encontrado: { usuario.nome} ({usuario.id_usuario})")
